@@ -52,21 +52,21 @@ public class KafkaSASLSSLProducerCreater {
 		startTime = System.currentTimeMillis();
 		
 		this.userName = acc;
-		catLog.debug("[UserName] : {}" + this.userName);
+		catLog.debug("[UserName] : {}", this.userName);
 		
 		this.SRT = SRT;
-		catLog.debug("[Password] : {}" + this.SRT);
+		catLog.debug("[Password] : {}", this.SRT);
 		
 		this.topic = topic;
-		catLog.debug("[Topic] : {}" + this.topic);
+		catLog.debug("[Topic] : {}", this.topic);
 		
-		catLog.debug("[Seed] : {}" + seed);
+		catLog.debug("[Seed] : {}", seed);
 		this.batch = new BatchProperties(seed);
 		
 		catLog.trace("Read Kafka Properties Start...");
 		FileInputStream fis = null;
 		try {
-			catLog.debug("[FileInput Path] : " + path);
+			catLog.debug("[FileInput Path] : {}", path);
 			fis = new FileInputStream(path);
 			kafkaProps.load(fis);
 		} catch (FileNotFoundException e) {
@@ -112,18 +112,18 @@ public class KafkaSASLSSLProducerCreater {
 		catLog.trace("Get Special Properties from Kafka Start...");
 
 		this.messageCount = kafkaProps.getProperty(MESSAGE_COUNT);
-		catLog.debug("[MessageCount] : " + this.messageCount);
+		catLog.debug("[MessageCount] : {}", this.messageCount);
 		
 		this.secureProtocol =  kafkaProps.getProperty(SECURITY_PROTOCOL);
-		catLog.debug("[Security Protocol] : " + this.secureProtocol);
+		catLog.debug("[Security Protocol] : {}", this.secureProtocol);
 		
 		this.sasl = kafkaProps.getProperty(SASL_MECHANISM);
-		catLog.debug("[Sasl Mechanism] : " + this.sasl);
+		catLog.debug("[Sasl Mechanism] : {}", this.sasl);
 		
 		String jaasTemplate = 
 				"org.apache.kafka.common.security.scram.ScramLoginModule required username=\"%s\" password=\"%s\";";
 		
-		catLog.debug("[Mode] : " + mode);
+		catLog.debug("[Mode] : {}", mode);
 		String rtnSRT;
 		if("ENC".equals(mode)) {
 			rtnSRT = batch.getDecData(SRT);
@@ -256,6 +256,13 @@ public class KafkaSASLSSLProducerCreater {
 
 					String msg = sendObj.toString();
 					catLog.debug("[Send To Kafka Msg] : {}", msg);
+					String tmp = msg;
+					JsonObject tmpJson = new JsonObject();
+					tmpJson.addProperty("test", tmp);
+					tmp = tmpJson.get("test").toString();
+					tmp = tmp.substring(1, tmp.length()-1);
+					ThreadContext.put("reqOut", tmp);
+					catLogOut.info("");
 					
 					try {
 						catLog.debug("[Send To Kafka Topic] : {}", this.topic);
@@ -304,7 +311,7 @@ public class KafkaSASLSSLProducerCreater {
 						//log.error("printStackTrace" + ", 筆數:" + nEvents , e);
 						rtnJson.addProperty("errorCode", ErrorCode.SERVER_RTN_GENERAL_ERROR);
 		        		rtnJson.addProperty("errorMsg",  "Send Kafka Occur Exception. Please check log.");
-						catLog.error("error message: " + msg);
+						catLog.error("error message: {}", msg);
 					}
 				}
 				
@@ -317,7 +324,7 @@ public class KafkaSASLSSLProducerCreater {
 			}
 			endTime = System.currentTimeMillis();
 			ThreadContext.put("execTimeOut", "SMS(Kafka) producer execute time: " + (endTime-startTime)+" ms");
-			catLog.info("END " + ((System.currentTimeMillis() - s) / 1000));
+			catLog.info("END {}", ((System.currentTimeMillis() - s) / 1000));
 		}
 		
 		
